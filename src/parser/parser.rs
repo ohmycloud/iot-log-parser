@@ -81,10 +81,9 @@ fn parse_ip_port_pair(input: &str) -> IResult<&str, IpPortPair> {
 }
 
 fn parse_iot_log(input: &str) -> IResult<&str, NetworkInfo> {
-    let mut parser = tuple((tag("["), separated_list1(tag("#"), parse_ip_port_pair), tag("]")));
-    let (input, (_, ip_pair, _)) = parser(input)?;
-    let client: IpPortPair = ip_pair[0].clone();
-    let server: IpPortPair = ip_pair[1].clone();
+    let mut parser = tuple((tag("["), separated_pair(parse_ip_port_pair, tag("#"), parse_ip_port_pair), tag("]")));
+    let (input, (_, (client, server), _)) = parser(input)?;
+
     let protocol = match client.port {
         0 => "mqtt",
         _ => "iec104"
@@ -104,14 +103,14 @@ fn parse_network_info(input: &str) -> IResult<&str, NetworkInfo> {
     Ok((input, network_info))
 }
 
-fn parse_json_str(input: &str) -> IResult<&str, &str> {
+fn parse_payload(input: &str) -> IResult<&str, &str> {
     let mut parser = tuple((alt((tag("D:"), tag("R:"))), not_line_ending));
     let (input, (_, json)) = parser(input)?;
     Ok((input, json))
 }
 
 pub fn parse_log(input: &str) -> IResult<&str, Option<IotMessage>> {
-    let mut parser = tuple((parse_server_time, space1, parse_network_info, space1, parse_json_str, many0(newline)));
+    let mut parser = tuple((parse_server_time, space1, parse_network_info, space1, parse_payload, many0(newline)));
     let (input, (ts, _, network_info, _, json_str, _)) = parser(input)?;
 
     let mut channel_info = ChannelInfo::default();
