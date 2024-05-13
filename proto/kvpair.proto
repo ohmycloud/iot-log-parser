@@ -1,0 +1,24 @@
+package com.circue.iot.proto;
+
+message IotEquipInfo {
+  required string station_id = 1;     // 场站编号
+  required string equipment_type = 2; // 设备类型
+  required string equipment_id = 3;   // 设备编号
+  optional string cab = 4;            // 电池柜
+  optional string stack = 5;          // 电池堆
+  optional string cluster = 6;        // 电池簇
+  optional string pack = 7;           // 电池组
+  optional string cell = 8;           // 电芯
+}
+
+message IotKvPair {
+  required IotEquipInfo equip_info = 1; // 设备信息
+  required int64 timestamp = 2;         // 数据时间
+  required string property_name = 3;    // 属性名
+  enum ValueType {
+     SIGNAL = 0;     // 遥信
+     TELEMETER = 1;  // 遥测
+     STANDBY = 2;    // 备用值
+  }
+  required ValueType value_type = 4; // 解析值类型
+}

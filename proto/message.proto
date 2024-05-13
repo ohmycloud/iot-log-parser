@@ -1,0 +1,16 @@
+package com.circue.iot.proto;
+
+message ChannelInfo {
+  required string client_ip = 1;   // 客户端IP地址
+  required uint32 client_port = 2; // 客户端端口
+  required string server_ip = 3;   // 服务器IP地址
+  required uint32 server_port = 4; // 服务器端口
+  optional string protocol = 5;    // 协议名
+}
+
+message IotMessage {
+  required ChannelInfo channel = 1;  // 连接信息
+  optional string message_type = 2;  // 消息类型
+  required bytes message = 3;        // 消息内容 byte 数组
+  optional int64 server_time = 4;    // 服务器时间
+}
